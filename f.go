@@ -12,13 +12,15 @@ import (
 
 type redirect struct{ url string }
 
-// Returns an object that when returned from an F handler, represents a redirect.
+// Redirect returns an object that when returned from an F handler, represents a redirect.
 func Redirect(url string) interface{} {
 	return redirect{url}
 }
 
-// A wrapper for a handler-like function that adds some niceties. The wrapped function returns an
-// HTTP status and a response object. If the response object is nil, no response will be written.
+// F makes a wrapper for a handler-like function that adds some niceties. The wrapped function
+// should return an HTTP status and a response object. If the response object is nil, no response
+// will be written. If the response object is returned by Redirect, a 307 Temporary Redirect will
+// be issued.
 //
 // The handler's type should be of the form func(*gin.Context, T) (int, interface{}), where T is
 // the same type that was passed to the SetDB middleware.
@@ -79,9 +81,8 @@ func F(handler interface{}) gin.HandlerFunc {
 func intOr(a, b int) int {
 	if a == 0 {
 		return b
-	} else {
-		return a
 	}
+	return a
 }
 
 func respondWith(c *gin.Context, status int, body interface{}) {
