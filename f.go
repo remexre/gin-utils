@@ -1,7 +1,6 @@
 package ginUtils
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -61,14 +60,9 @@ func F(handler interface{}) gin.HandlerFunc {
 	}
 
 	return func(c *gin.Context) {
-		val, has := c.Get("db")
+		db, has := c.Get("db")
 		if !has {
 			panic("db not present; was the SetDB middleware not used?")
-		}
-
-		db, ok := val.(*sql.DB)
-		if !ok {
-			panic("db had wrong type")
 		}
 
 		status, body := handlerClo(c, db)
